@@ -114,7 +114,83 @@ public class JsFacade implements Exportable {
         return "" + messenger.getAuthPhone();
     }
 
-    public void requestSms(String phone, final JsAuthSuccessClosure success,
+    public JsPromise startEmailAuth(final String email) {
+        return JsPromise.create(new JsPromiseExecutor() {
+            @Override
+            public void execute() {
+                messenger.requestStartEmailAuth(email).start(new CommandCallback<AuthState>() {
+                    @Override
+                    public void onResult(AuthState res) {
+                        resolve(Enums.convert(res));
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        reject(e.getMessage());
+                    }
+                });
+            }
+        });
+    }
+
+    public JsPromise validateCode(final String code) {
+        return JsPromise.create(new JsPromiseExecutor() {
+            @Override
+            public void execute() {
+                messenger.validateCode(code).start(new CommandCallback<AuthState>() {
+                    @Override
+                    public void onResult(AuthState res) {
+                        resolve(Enums.convert(res));
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        reject(e.getMessage());
+                    }
+                });
+            }
+        });
+    }
+
+    public JsPromise getOAuthParams() {
+        return JsPromise.create(new JsPromiseExecutor() {
+            @Override
+            public void execute() {
+                messenger.requestGetOAuthParams().start(new CommandCallback<AuthState>() {
+                    @Override
+                    public void onResult(AuthState res) {
+                        resolve(Enums.convert(res));
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        reject(e.getMessage());
+                    }
+                });
+            }
+        });
+    }
+
+    public JsPromise completeOAuth(final String code) {
+        return JsPromise.create(new JsPromiseExecutor() {
+            @Override
+            public void execute() {
+                messenger.requestCompleteOAuth(code).start(new CommandCallback<AuthState>() {
+                    @Override
+                    public void onResult(AuthState res) {
+                        resolve(Enums.convert(res));
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        reject(e.getMessage());
+                    }
+                });
+            }
+        });
+    }
+
+    public void requestSmsObsolete(String phone, final JsAuthSuccessClosure success,
                            final JsAuthErrorClosure error) {
         try {
             long res = Long.parseLong(phone);
@@ -149,7 +225,7 @@ public class JsFacade implements Exportable {
         }
     }
 
-    public void sendCode(String code, final JsAuthSuccessClosure success,
+    public void sendCodeObsolete(String code, final JsAuthSuccessClosure success,
                          final JsAuthErrorClosure error) {
         try {
             int res = Integer.parseInt(code);
@@ -184,7 +260,7 @@ public class JsFacade implements Exportable {
         }
     }
 
-    public void signUp(String name, final JsAuthSuccessClosure success,
+    public void signUpObsolete(String name, final JsAuthSuccessClosure success,
                        final JsAuthErrorClosure error) {
         messenger.signUpObsolete(name, null, false).start(new CommandCallback<AuthState>() {
             @Override
