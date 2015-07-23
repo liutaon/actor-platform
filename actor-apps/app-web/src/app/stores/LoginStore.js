@@ -23,8 +23,8 @@ let isSignupStarted = false;
 let myUid = null;
 
 var LoginStore = assign({}, EventEmitter.prototype, {
-  isLoggedIn: function () {
-    return (ActorClient.isLoggedIn());
+  isLoggedIn: () => {
+    return ActorClient.isLoggedIn();
   },
 
   getStep: () => step,
