@@ -61,19 +61,24 @@ trait Office extends PersistentActor with ActorLogging {
 
   def persistStashingReply[R](e: OfficeEvent)(onComplete: OfficeEvent ⇒ Any)(f: OfficeEvent ⇒ Future[R]): Unit = {
     val replyTo = sender()
+    println("====================reply to is " + replyTo)
 
-    context become stashing
+    context become (stashing, discardOld = false)//TODO:correct?
+    println("================================================================")
 
     persistAsync(e) { evt ⇒
+      println("======================================================= persistAsync")
       f(evt) pipeTo replyTo onComplete {
-        case Success(_) ⇒
+        case Success(e) ⇒
+          println("persistStashingReply================================ success " + e)
           onComplete(evt)
           unstashAll()
         case Failure(e) ⇒
+          println("persistStashingReply================================ failure " + e)
           log.error(e, "Failure while processing event {}", e)
           replyTo ! Status.Failure(e)
 
-          onComplete(evt)
+          context unbecome ()//TODO:correct?
           unstashAll()
       }
     }

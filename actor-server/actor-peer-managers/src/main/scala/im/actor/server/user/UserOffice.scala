@@ -3,6 +3,7 @@ package im.actor.server.user
 import im.actor.api.rpc.users.Sex
 
 import scala.concurrent.{ ExecutionContext, Future }
+import scala.util.{ Failure, Success }
 import scala.util.control.NoStackTrace
 
 import akka.actor._
@@ -31,7 +32,12 @@ object UserOffice {
     ec:               ExecutionContext
 
   ): Future[CreateAck] = {
-    (userOfficeRegion.ref ? Create(userId, accessSalt, name, countryCode, sex)).mapTo[CreateAck]
+    val future = (userOfficeRegion.ref ? Create(userId, accessSalt, name, countryCode, sex))
+    future onComplete {
+      case Success(e) ⇒ println("create ==================== success " + e)
+      case Failure(e) ⇒ println("create==================== failure " + e)
+    }
+    future.mapTo[CreateAck]
   }
 
   def addPhone(userId: Int, phone: Long)(
@@ -41,7 +47,12 @@ object UserOffice {
     ec:               ExecutionContext
 
   ): Future[AddPhoneAck] = {
-    (userOfficeRegion.ref ? AddPhone(userId, phone)).mapTo[AddPhoneAck]
+    val future = userOfficeRegion.ref ? AddPhone(userId, phone)
+    future onComplete {
+      case Success(e) ⇒ println("addPhone==================== success " + e)
+      case Failure(e) ⇒ println("addPhone==================== failure " + e)
+    }
+    future.mapTo[AddPhoneAck]
   }
 
   def addEmail(userId: Int, email: String)(

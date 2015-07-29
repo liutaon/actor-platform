@@ -110,6 +110,7 @@ class UserOfficeActor(
 
   private[this] def creating: Receive = {
     case Create(_, accessSalt, name, countryCode, sex, clientAuthId) ⇒ create(accessSalt, name, countryCode, sex, clientAuthId)
+    case _ ⇒ println("==============================should not be there")
   }
 
   protected def working(state: User): Receive = {
@@ -118,8 +119,10 @@ class UserOfficeActor(
     case ChangeCountryCode(_, countryCode) ⇒ changeCountryCode(state, countryCode)
     case ChangeName(_, name, clientAuthId) ⇒ changeName(state, name, clientAuthId)
     case Delete(_)                         ⇒ delete(state)
-    case AddPhone(_, phone)                ⇒ addPhone(state, phone)
-    case AddEmail(_, email)                ⇒ addEmail(state, email)
+    case AddPhone(_, phone) ⇒
+      println("==================================== add phone in working")
+      addPhone(state, phone)
+    case AddEmail(_, email) ⇒ addEmail(state, email)
     case DeliverMessage(_, peer, senderUserId, randomId, date, message, isFat) ⇒
       deliverMessage(state, peer, senderUserId, randomId, date, message, isFat)
     case DeliverOwnMessage(_, peer, senderAuthId, randomId, date, message, isFat) ⇒

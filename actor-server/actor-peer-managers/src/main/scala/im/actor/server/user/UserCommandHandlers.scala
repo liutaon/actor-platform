@@ -40,8 +40,10 @@ private[user] trait UserCommandHandlers {
     implicit
     db: Database
   ): Unit = {
+    println("=============================== in create handler")
     val createEvent = UserEvents.Created(userId, accessSalt, name, countryCode)
     persistStashingReply(createEvent)(workWith(_, initState(createEvent))) { evt ⇒
+      println("======================= in create callback")
       val user = models.User(
         id = userId,
         accessSalt = accessSalt,
@@ -98,8 +100,10 @@ private[user] trait UserCommandHandlers {
     db:                  Database,
     seqUpdManagerRegion: SeqUpdatesManagerRegion,
     socialManagerRegion: SocialManagerRegion
-  ): Unit =
+  ): Unit = {
+    println("=========================== in addPhone handler")
     persistStashingReply(UserEvents.PhoneAdded(phone))(workWith(_, user)) { _ ⇒
+      println("============================= in addPhone callback")
       val rng = ThreadLocalRandom.current()
       val action = for {
         _ ← p.UserPhone.create(rng.nextInt(), userId, ACLUtils.nextAccessSalt(rng), phone, "Mobile phone")
@@ -107,6 +111,7 @@ private[user] trait UserCommandHandlers {
       } yield AddPhoneAck()
       db.run(action)
     }
+  }
 
   protected def addEmail(user: User, email: String)(
     implicit
